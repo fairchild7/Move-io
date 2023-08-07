@@ -12,13 +12,14 @@ public class Boomerang : Bullet
         dir = transform.forward;
         rb.velocity = dir * 10f;
         rb.angularVelocity = Vector3.up * 5f;
-        Invoke(nameof(GoBack), 2f);
+        StartCoroutine(GoBack());
     }
 
-    private void GoBack()
+    private IEnumerator GoBack()
     {
+        yield return new WaitForSeconds(2f);
         rb.velocity = -dir * 10f;
-        rb.angularVelocity = Vector3.up * 5f;
-        Invoke(nameof(OnDespawn), 2f);
+        yield return new WaitForSeconds(2f);
+        OnDespawn();
     }
 }

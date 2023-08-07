@@ -25,9 +25,24 @@ public class SimplePool : Singleton<SimplePool>
 
         if (pools[type].Count == 0)
         {
-            obj = Instantiate(bulletPool.Find(x => x.bulletType == type));
-            pools[type].Add(obj);
+            for (int i = 0; i < bulletPool.Count; i++)
+            {
+                if (bulletPool[i].weaponData.bulletType == type)
+                {
+                    
+                    if (type == Type.Hammer)
+                    {
+                        Debug.Log("ddd");
+                    }
+                    obj = Instantiate(bulletPool.Find(x => x.weaponData.bulletType == type));
+                    pools[type].Add(obj);
+
+                    break;
+                }
+
+            }
             
+            //obj = Instantiate(bulletPool[4]);
         }
         obj = pools[type][0];
         obj.gameObject.SetActive(true);
@@ -40,7 +55,7 @@ public class SimplePool : Singleton<SimplePool>
         if (obj != null)
         {
             obj.gameObject.SetActive(false);
-            pools[obj.bulletType].Add(obj);
+            pools[obj.weaponData.bulletType].Add(obj);
         }
     }
 }

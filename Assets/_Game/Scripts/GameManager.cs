@@ -7,18 +7,15 @@ public class GameManager : Singleton<GameManager>
     public Player player;
     [SerializeField] LayerMask wallLayer;
 
+    private int enemyCount;
+
     private List<GameObject> wallList = new List<GameObject>();
 
     public List<Enemy> listEnemy = new List<Enemy>(); 
 
     private void Awake()
     {
-       
-    }
-
-    private void Start()
-    {
-        StartCoroutine(SpawnEnemy());
+        enemyCount = 0;
     }
 
     private void Update()
@@ -33,6 +30,23 @@ public class GameManager : Singleton<GameManager>
         }
 
         CheckWall();
+    }
+
+    public void PauseGame()
+    {
+        foreach (Enemy e in listEnemy)
+        {
+            e.agent.isStopped = true;
+        }
+    }
+
+    public void ResumeGame()
+    {
+        foreach (Enemy e in listEnemy)
+        {
+            e.agent.isStopped = false;
+            e.ChangeState(new MoveState());
+        }
     }
 
     public void AddEnemyToList(Enemy enemy)
@@ -67,18 +81,24 @@ public class GameManager : Singleton<GameManager>
     {
         character.level++;
         Vector3 currentSize = character.transform.localScale;
-        currentSize *= 1 + 0.1f * character.level;
+        currentSize = new Vector3(1f, 1f, 1f) * (1 + 0.1f * character.level);
         character.transform.localScale = currentSize;
         player.throwPoint.position = new Vector3(player.throwPoint.position.x, 1.2f, player.throwPoint.position.z);
     }
 
+    public void StartGame()
+    {
+        StartCoroutine(SpawnEnemy());
+    }
+
     private IEnumerator SpawnEnemy()
     {
-        while (true)
+        while (enemyCount < 50)
         {
             if (listEnemy.Count < 2)
             {
                 EnemyPool.Instance.Spawn(new Vector3(Random.Range(-50f, 50f), 0f, Random.Range(-50f, 50f)), Quaternion.identity);
+                enemyCount++;
             }
             yield return new WaitForSeconds(2f);
         }

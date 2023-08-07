@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum Type
 {
-    TestBullet,
+    BasicBullet,
     Hammer,
     Boomerang,
     Arrow,
@@ -17,27 +17,16 @@ public enum AttackType
     Ranged,
 }
 
-[CreateAssetMenu(fileName = "Bullet", menuName = "ScriptableObjects/BulletData", order = 1)]
 public class Bullet : MonoBehaviour
 {
-    public Type bulletType;
-    public AttackType attackType;
-    public GameObject prefab;
-
-    protected Rigidbody rb;
-
-    private float bulletLifeTime = 1.5f;
-
     public int id;
+    public Rigidbody rb;
 
-    private void Start()
-    {
-        
-    }
+    [SerializeField]
+    public WeaponData weaponData;
 
     public virtual void OnInit()
     {
-        rb = GetComponent<Rigidbody>();
         rb.velocity = transform.forward * 5f;
         StartCoroutine(DespawnOnLifeTime());
     }
@@ -47,10 +36,10 @@ public class Bullet : MonoBehaviour
         StopAllCoroutines();
         SimplePool.Instance.Despawn(this);
     }
-    
-    private IEnumerator DespawnOnLifeTime()
+
+    protected IEnumerator DespawnOnLifeTime()
     {
-        yield return new WaitForSeconds(bulletLifeTime);
+        yield return new WaitForSeconds(weaponData.bulletLifeTime);
         OnDespawn();
     }
 }

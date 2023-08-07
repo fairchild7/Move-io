@@ -6,17 +6,18 @@ public class Character : MonoBehaviour
 {
     [SerializeField] Animator animator;
     [SerializeField] protected Rigidbody rb;
+    [SerializeField] GameObject weaponPos;
 
     public Transform throwPoint;
 
     public int level;
 
     protected bool canAttack;
-    protected bool attackDelay;
     protected bool isDead;
 
     public int numBullet;
     public List<Character> enemyInRange = new List<Character>();
+    public GameObject current;
     public Bullet currentBullet;
 
     protected virtual void Start()
@@ -45,8 +46,9 @@ public class Character : MonoBehaviour
         isDead = false;
         level = 0;
         canAttack = false;
+        currentBullet = current.GetComponent<Bullet>();
         transform.localScale = new Vector3(1f, 1f, 1f);
-        if (currentBullet.attackType == AttackType.Melee)
+        if (currentBullet.weaponData.attackType == AttackType.Melee)
         {
             currentBullet.id = GetInstanceID();
         }
@@ -89,7 +91,7 @@ public class Character : MonoBehaviour
 
     public virtual void Attack()
     {
-        if (currentBullet.attackType == AttackType.Melee)
+        if (currentBullet.weaponData.attackType == AttackType.Melee)
         {
             MeleeAttack();
         }
@@ -112,7 +114,10 @@ public class Character : MonoBehaviour
             Quaternion newRotation = Quaternion.LookRotation(direction);
             transform.rotation = newRotation;
 
-            Bullet bullet = SimplePool.Instance.Spawn(throwPoint.position, Quaternion.LookRotation(transform.forward), currentBullet.bulletType);
+            //yield return new WaitForSeconds(0.5f);
+
+            weaponPos.SetActive(false);
+            Bullet bullet = SimplePool.Instance.Spawn(throwPoint.position, Quaternion.LookRotation(transform.forward), currentBullet.weaponData.bulletType);
             bullet.OnInit();
             bullet.id = GetInstanceID();
             numBullet--;
@@ -139,9 +144,15 @@ public class Character : MonoBehaviour
         isDead = true;
     }
 
+    protected void UpdateWeapon()
+    {
+        currentBullet = current.GetComponent<Bullet>();
+    }
+
     private void DeactiveAttack()
     {
         ChangeAnimatorParameter("IsAttack", false);
+        weaponPos.SetActive(true);
     }
 
     private void OnTriggerEnter(Collider collider)

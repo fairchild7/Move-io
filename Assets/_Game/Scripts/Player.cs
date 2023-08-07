@@ -13,10 +13,23 @@ public class Player : Character
         base.Update();
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            if (currentBullet.GetComponent<Bullet>() != null)
+            if (current.GetComponent<Bullet>() != null)
             {
-                currentBullet = new Boomerang();
+                current = (GameObject)Resources.Load("Weapon/Arrow");
+                UpdateWeapon();
             }
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            if (current.GetComponent<Bullet>() != null)
+            {
+                current = (GameObject)Resources.Load("Weapon/Boomerang");
+                UpdateWeapon();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Debug.Log(current.GetComponent<Bullet>().weaponData.bulletType.ToString());
         }
     }
 

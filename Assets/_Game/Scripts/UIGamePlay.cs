@@ -2,8 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIGamePlay : Singleton<UIGamePlay>
+public class UIGamePlay : UICanvas
 {
+    private static UIGamePlay instance;
+    public static UIGamePlay Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<UIGamePlay>();
+            }
+            return instance;
+        }
+    }
+
+    public void ButtonPause()
+    {
+        GameManager.Instance.PauseGame();
+    }
+
     public void SetParentToThis(Enemy enemy)
     {
         enemy.arrowPrefab.SetParent(this.transform);
@@ -22,8 +40,6 @@ public class UIGamePlay : Singleton<UIGamePlay>
             enemy.arrowPrefab.gameObject.SetActive(true);
             DrawNavigation(enemy);
         }
-        //Camera.main.WorldToScreenPoint; world to screen camera
-        //RectTransformUtility.WorldToScreenPoint; -> world to screen canvas
     }
 
     public void DrawNavigation(Enemy enemy)
@@ -32,7 +48,7 @@ public class UIGamePlay : Singleton<UIGamePlay>
         Vector3 playerPos = RectTransformUtility.WorldToScreenPoint(Camera.main, GameManager.Instance.player.transform.position);
         Vector3 dir = botPos - playerPos;
    
-        Vector3 arrowPos = new Vector3(Mathf.Clamp(dir.x, -900, 900f), Mathf.Clamp(dir.y, -500f, 500f), dir.z);
+        Vector3 arrowPos = new Vector3(Mathf.Clamp(dir.x, -500, 500f), Mathf.Clamp(dir.y, -900f, 900f), dir.z);
         enemy.arrowPrefab.transform.localPosition = arrowPos;
         enemy.arrowPrefab.eulerAngles = new Vector3(0f, 0f, GetAngle(enemy.transform));
     }
